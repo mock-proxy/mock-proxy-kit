@@ -142,7 +142,7 @@ export interface TeamConfig {
   // TODO: 未来支持url配置
   sites: SiteConfig[];
   // 获取project和detail的脚本地址
-  script: string;
+  scriptUrl: string;
 }
 
 /**
@@ -150,7 +150,7 @@ export interface TeamConfig {
  * 可通过fetchJson，拉取服务端json数据，不受同源限制，拥有高权限
  */
 export interface ContextInfo {
-  fetchJson: (...args: Parameters<typeof fetch>) => Promise<any>;
+  fetchJSON: (...args: Parameters<typeof fetch>) => Promise<any>;
 }
 
 /**
