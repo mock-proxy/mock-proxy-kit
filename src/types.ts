@@ -85,6 +85,80 @@ export interface ProjectResponse {
   groups: GroupResponse[];
 }
 
+export interface ApiConfig {
+  [key: string]: any;
+}
+
+export interface ProjectConfig {
+  /**
+   * 项目名称
+   */
+  name: string;
+  /**
+   * 项目id
+   */
+  id: string | number;
+  /**
+   * TODO: api配置，可配置api的restful路径，最终在发送请求的时候，会以此配置为准来转发
+   */
+  apisConfig?: ApiConfig[];
+  /**
+   * 其他开发者所需字段
+   */
+  [key: string]: any;
+}
+
+export interface SiteConfig {
+  /**
+   * 站点名称，比如github
+   */
+  name: string;
+  /**
+   * 负责人
+   */
+  owners?: string[];
+  /**
+   * 描述
+   */
+  desc?: string;
+  /**
+   * 站点的域名
+   */
+  domains: string[];
+  /**
+   * 站点对应的项目配置。可能一个站点对应了多个项目（即oneapi、yapi的project）
+   */
+  projects: ProjectConfig[];
+  /**
+   * 跨站点配置：可能该站点需要调用其他site的接口
+   */
+  // crossSiteConfig: unknown;
+}
+
+/**
+ * 团队配置
+ */
+export interface TeamConfig {
+  // TODO: 未来支持url配置
+  sites: SiteConfig[];
+  // 获取project和detail的脚本地址
+  script: string;
+}
+
+/**
+ * 开发者自定义函数上下文。
+ * 可通过fetchJson，拉取服务端json数据，不受同源限制，拥有高权限
+ */
 export interface ContextInfo {
   fetchJson: (...args: Parameters<typeof fetch>) => Promise<any>;
 }
+
+/**
+ * 获取project详情的请求，由开发者自定义
+ */
+export type GetProjectRequest = (project: ProjectConfig, context: ContextInfo) => Promise<ProjectResponse>;
+
+/**
+ * 获取api详情的请求，由开发者自定义
+ */
+export type GetApiRequest = (project: ProjectConfig, api: OverviewApiResponse, context: ContextInfo) => Promise<ApiResponse>;
