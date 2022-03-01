@@ -149,16 +149,16 @@ export interface TeamConfig {
  * 开发者自定义函数上下文。
  * 可通过fetchJson，拉取服务端json数据，不受同源限制，拥有高权限
  */
-export interface ContextInfo {
+export interface Context {
   fetchJSON: (...args: Parameters<typeof fetch>) => Promise<any>;
 }
 
 /**
  * 获取project详情的请求，由开发者自定义
  */
-export type GetProjectRequest = (project: ProjectConfig, context: ContextInfo) => Promise<ProjectResponse>;
+export type GetProjectRequest = (project: ProjectConfig, context: Context) => Promise<ProjectResponse>;
 
 /**
  * 获取api详情的请求，由开发者自定义
  */
-export type GetApiRequest = (project: ProjectConfig, api: OverviewApiResponse, context: ContextInfo) => Promise<ApiResponse>;
+export type GetApiRequest = (project: ProjectConfig, api: OverviewApiResponse, context: Context) => Promise<ApiResponse>;
