@@ -13,6 +13,8 @@ export interface SceneResponse {
   mockUrl: string;
 }
 
+export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'ALL';
+
 export interface ApiResponse {
   /**
    * api id
@@ -25,11 +27,11 @@ export interface ApiResponse {
   /**
    * api method
    */
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'ALL';
+  method: ApiMethod;
   /**
    * api名称
    */
-  name?: string;
+  name: string;
   /**
    * api描述
    */
@@ -61,7 +63,45 @@ export interface ApiResponse {
   scenes?: SceneResponse[];
 }
 
-export type OverviewApiResponse = Omit<ApiResponse, 'mockUrl' | 'mockData' | 'sourceUrl' | 'scenes'>;
+export type OverviewApiResponse = {
+  /**
+   * api id
+   */
+   id: number | string;
+   /**
+    * api path
+    */
+   path: string;
+   /**
+    * api method
+    */
+   method: ApiMethod;
+   /**
+    * api名称
+    */
+   name: string;
+   /**
+    * api描述
+    */
+   desc?: string;
+   /**
+    * api创建者
+    */
+   creator?: string;
+   /**
+    * 如果申明了，会以此为规则的regexFilter。一般用于restful接口
+    * @see RE2 syntax
+    */
+   regexFilter?: string;
+   /**
+    * mock地址
+    */
+   mockUrl?: string;
+   /**
+    * 原接口地址
+    */
+   sourceUrl?: string;
+}
 
 export interface GroupResponse {
    /**
