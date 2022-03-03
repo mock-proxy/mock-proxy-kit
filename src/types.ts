@@ -185,10 +185,17 @@ export interface TeamConfig {
    * 获取project和detail的脚本地址
    */
   scriptUrl: string;
-  /**
-   * mock base 地址，用于解决转发到该url产生的cors问题。
-   */
-  mockBaseUrls: string[];
+  corsConfig: {
+    /**
+     * 主要是用于篡改access-control-allow-headers，避免引发cors问题
+     * 默认会支持
+     */
+    accessControlAllowHeaders?: string[];
+    /**
+     * 重定向的目标地址，比如oneapi.alibaba-inc.com
+     */
+    redirectTarget: string | string[];
+  }
 }
 
 /**
