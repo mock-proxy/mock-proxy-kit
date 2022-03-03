@@ -181,8 +181,14 @@ export interface SiteConfig {
 export interface TeamConfig {
   // TODO: 未来支持url配置
   sites: SiteConfig[];
-  // 获取project和detail的脚本地址
+  /**
+   * 获取project和detail的脚本地址
+   */
   scriptUrl: string;
+  /**
+   * mock base 地址，用于解决转发到该url产生的cors问题。
+   */
+  mockBaseUrls: string[];
 }
 
 /**
