@@ -96,7 +96,7 @@ export type OverviewApiResponse = {
    /**
     * mock地址
     */
-   mockUrl?: string;
+   mockUrl: string;
    /**
     * 原接口地址
     */
