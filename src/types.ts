@@ -195,7 +195,11 @@ export interface TeamConfig {
      * 重定向的目标地址，比如oneapi.alibaba-inc.com
      */
     redirectTarget: string | string[];
-  }
+  };
+  /**
+   * 配置页面地址，用于在未匹配上配置时，提示跳转
+   */
+  configPageUrl?: string;
 }
 
 /**
