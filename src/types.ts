@@ -21,9 +21,21 @@ export interface ApiResponse {
    */
   id: number | string;
   /**
-   * api path
+   * api path, 标识mock平台的api路径，未必是真实的路径
    */
   path: string;
+  /**
+   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
+   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
+   * 但真实路径其实是：api/resource/{resourceId}
+   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
+   */
+  realPath?: string;
+  /**
+   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
+   * @see RE2 syntax
+   */
+  regexFilter?: string;
   /**
    * api method
    */
@@ -40,11 +52,6 @@ export interface ApiResponse {
    * api创建者
    */
   creator?: string;
-  /**
-   * 如果申明了，会以此为规则的regexFilter。一般用于restful接口
-   * @see RE2 syntax
-   */
-  regexFilter?: string;
   /**
    * mock地址
    */
@@ -67,46 +74,53 @@ export type OverviewApiResponse = {
   /**
    * api id
    */
-   id: number | string;
-   /**
-    * api path
-    */
-   path: string;
-   /**
-    * api method
-    */
-   method: ApiMethod;
-   /**
-    * api名称
-    */
-   name: string;
-   /**
-    * api描述
-    */
-   desc?: string;
-   /**
-    * api创建者
-    */
-   creator?: string;
-   /**
-    * 如果申明了，会以此为规则的regexFilter。一般用于restful接口
-    * @see RE2 syntax
-    */
-   regexFilter?: string;
-   /**
-    * mock地址
-    */
-   mockUrl: string;
-   /**
-    * 原接口地址
-    */
-   sourceUrl?: string;
+  id: number | string;
+  /**
+   * api path, 标识mock平台的api路径，未必是真实的路径
+   */
+  path: string;
+  /**
+   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
+   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
+   * 但真实路径其实是：api/resource/{resourceId}
+   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
+   */
+  realPath?: string;
+  /**
+   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
+   * @see RE2 syntax
+   */
+  regexFilter?: string;
+  /**
+   * api method
+   */
+  method: ApiMethod;
+  /**
+   * api名称
+   */
+  name: string;
+  /**
+   * api描述
+   */
+  desc?: string;
+  /**
+   * api创建者
+   */
+  creator?: string;
+  /**
+   * mock地址
+   */
+  mockUrl: string;
+  /**
+   * 原接口地址
+   */
+  sourceUrl?: string;
 }
 
 export interface GroupResponse {
-   /**
-   * 分组id
-   */
+  /**
+  * 分组id
+  */
   id: number | string;
   /**
    * 分组名
