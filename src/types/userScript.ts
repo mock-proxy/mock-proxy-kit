@@ -1,12 +1,12 @@
+import { SceneResponse } from "..";
 import { ApiResponse, OverviewApiResponse, ProjectConfig, ProjectResponse } from "./common";
 
 /**
  * 开发者自定义函数上下文。
- * 可通过fetchJson，拉取服务端json数据，不受同源限制，拥有高权限
+ * 可通过fetchJson，拉取或向服务端传递json数据，不受同源限制，拥有高权限
  */
 export interface Context {
   fetchJSON: <Response = any>(...args: Parameters<typeof fetch>) => Promise<Response>;
-  postJSON: <Response = any>(...args: Parameters<typeof fetch>) => Promise<Response>;
 }
 
 /**
@@ -22,7 +22,12 @@ export type GetApiRequest = (project: ProjectConfig, api: OverviewApiResponse, c
 /**
  * 更改api场景数据，由开发者自定义
  */
-export type UpdateApiSceneRequest<Response = any> = (project: ProjectConfig, api: ApiResponse, context: Context) => Promise<Response>;
+export type UpdateApiSceneRequest<Response = any> = (
+  project: ProjectConfig,
+  api: ApiResponse,
+  scene: SceneResponse,
+  context: Context
+) => Promise<Response>;
 
 export interface UserScript {
   getProject: GetProjectRequest;
