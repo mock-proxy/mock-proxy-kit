@@ -222,4 +222,8 @@ export interface TeamConfig {
    * 配置页面地址，用于在未匹配上配置时，提示跳转
    */
   configPageUrl?: string;
+  /**
+   * 可否修改api场景数据
+   */
+  canUpdateApiScene?: boolean; 
 }
