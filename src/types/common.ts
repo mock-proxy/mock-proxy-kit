@@ -235,7 +235,8 @@ export interface TeamConfig {
    */
   canUpdateApiScene?: boolean; 
   /**
-   * 默认场景id
+   * 默认场景id，一是用于进入详情面板后匹配，二是用于未来支持其它平台的默认场景编辑匹配（如rap2）
+   * @default 'default'
    */
   defaultSceneId?: string;
 }
