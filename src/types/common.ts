@@ -211,6 +211,9 @@ export interface TeamConfig {
    * 获取project和detail的脚本地址
    */
   scriptUrl: string;
+  /**
+   * CORS配置
+   */
   corsConfig: {
     /**
      * 主要是用于篡改access-control-allow-headers，避免引发cors问题
@@ -228,6 +231,11 @@ export interface TeamConfig {
   configPageUrl?: string;
   /**
    * 可否修改api场景数据
+   * TODO: 未来考虑支持rap2，其默认场景不可编辑。需要新增配置
    */
   canUpdateApiScene?: boolean; 
+  /**
+   * 默认场景id
+   */
+  defaultSceneId?: string;
 }
