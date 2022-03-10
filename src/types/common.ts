@@ -1,5 +1,9 @@
 export interface SceneResponse {
   /**
+   * 场景id
+   */
+  id: string | number;
+  /**
    * 场景名称
    */
   name: string;
