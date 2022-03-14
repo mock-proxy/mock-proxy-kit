@@ -230,10 +230,10 @@ export interface TeamConfig {
    */
   configPageUrl?: string;
   /**
-   * 可否修改api场景数据
+   * 可否编辑api场景（增加场景、修改mock数据）
    * TODO: 未来考虑支持rap2，其默认场景不可编辑。需要新增配置
    */
-  canUpdateApiScene?: boolean; 
+  apiSceneEditable?: boolean; 
   /**
    * 默认场景id，一是用于进入详情面板后匹配，二是用于未来支持其它平台的默认场景编辑匹配（如rap2）
    * @default 'default'
