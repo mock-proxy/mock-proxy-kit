@@ -32,7 +32,7 @@ export type UpdateApiSceneRequest<Response = any> = (
 /**
  * 添加api场景，由开发者自定义
  */
-export type addApiSceneRequest<Response = any> = (
+export type AddApiSceneRequest<Response = any> = (
   project: ProjectConfig,
   api: ApiResponse,
   scene: AddScenePayload,
@@ -42,7 +42,7 @@ export type addApiSceneRequest<Response = any> = (
 /**
  * 删除api场景，由开发者自定义
  */
-export type deleteApiSceneRequest<Response = any> = (
+export type DeleteApiSceneRequest<Response = any> = (
   project: ProjectConfig,
   api: ApiResponse,
   scene: SceneResponse,
@@ -53,6 +53,6 @@ export interface UserScript {
   getProject: GetProjectRequest;
   getApi: GetApiRequest;
   updateApiScene?: UpdateApiSceneRequest;
-  addApiScene?: addApiSceneRequest;
-  deleteApiScene?: deleteApiSceneRequest;
+  addApiScene?: AddApiSceneRequest;
+  deleteApiScene?: DeleteApiSceneRequest;
 }
