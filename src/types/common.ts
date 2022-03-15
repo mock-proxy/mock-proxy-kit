@@ -1,3 +1,29 @@
+/**
+ * api场景可否编辑
+ */
+export type ApiSceneEditable = {
+  /**
+   * 场景可否更改
+   * @default false
+   */
+  updatable?: boolean;
+  /**
+  * 场景名称可否编辑，需要updatable为true才会生效
+  * @default true
+  */
+  nameEditable?: boolean;
+  /**
+   * 场景可否删除
+   * @default false
+   */
+  deletable?: boolean;
+  /**
+   * 场景可否新增
+   * @default false
+   */
+  addable?: boolean;
+} | boolean;
+
 export interface SceneResponse {
   /**
    * 场景id
@@ -243,14 +269,9 @@ export interface TeamConfig {
   /**
    * 可否编辑api场景（增加场景、修改mock数据）
    * TODO: 未来考虑支持rap2，其默认场景不可编辑。需要新增配置
+   * @default false
    */
-  apiSceneEditable?: {
-    /**
-     * 场景名称可否编辑
-     * @default true
-     */
-    nameEditable?: boolean;
-  } | boolean; 
+  apiSceneEditable?: ApiSceneEditable;
   /**
    * 默认场景id，一是用于进入详情面板后匹配，二是用于未来支持其它平台的默认场景编辑匹配（如rap2）
    * @default 'default'
