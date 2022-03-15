@@ -1,5 +1,5 @@
 import { SceneResponse } from "..";
-import { ApiResponse, OverviewApiResponse, ProjectConfig, ProjectResponse } from "./common";
+import { AddScenePayload, ApiResponse, OverviewApiResponse, ProjectConfig, ProjectResponse } from "./common";
 
 /**
  * 开发者自定义函数上下文。
@@ -29,8 +29,30 @@ export type UpdateApiSceneRequest<Response = any> = (
   context: Context
 ) => Promise<Response>;
 
+/**
+ * 添加api场景，由开发者自定义
+ */
+export type addApiSceneRequest<Response = any> = (
+  project: ProjectConfig,
+  api: ApiResponse,
+  scene: AddScenePayload,
+  context: Context
+) => Promise<Response>;
+
+/**
+ * 删除api场景，由开发者自定义
+ */
+export type deleteApiSceneRequest<Response = any> = (
+  project: ProjectConfig,
+  api: ApiResponse,
+  scene: SceneResponse,
+  context: Context
+) => Promise<Response>;
+
 export interface UserScript {
   getProject: GetProjectRequest;
   getApi: GetApiRequest;
   updateApiScene?: UpdateApiSceneRequest;
+  addApiScene?: addApiSceneRequest;
+  deleteApiScene?: deleteApiSceneRequest;
 }

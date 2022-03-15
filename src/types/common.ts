@@ -17,6 +17,17 @@ export interface SceneResponse {
   mockUrl: string;
 }
 
+export interface AddScenePayload {
+  /**
+   * 场景名称
+   */
+  name: string;
+  /**
+   * 场景数据
+   */
+  mockData: any;
+}
+
 export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'ALL';
 
 export type OverviewApiResponse = {
