@@ -32,12 +32,15 @@ export type UpdateApiSceneRequest<Response = any> = (
 /**
  * 添加api场景，由开发者自定义
  */
-export type AddApiSceneRequest<Response = any> = (
+export type AddApiSceneRequest = (
   project: ProjectConfig,
   api: ApiResponse,
   scene: AddScenePayload,
   context: Context
-) => Promise<Response>;
+) => Promise<{
+  id: string | number;
+  [k: string]: any;
+}>;
 
 /**
  * 删除api场景，由开发者自定义
