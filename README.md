@@ -45,10 +45,6 @@ export interface ProjectConfig {
    */
   id: string | number;
   /**
-   * TODO: api配置，可配置api的restful路径，最终在发送请求的时候，会以此配置为准来转发
-   */
-  apisConfig?: ApiConfig[];
-  /**
    * 其他开发者所需字段
    */
   [key: string]: any;
