@@ -1,5 +1,4 @@
-import { SceneResponse } from "..";
-import { AddScenePayload, ApiResponse, OverviewApiResponse, ProjectConfig, ProjectResponse } from "./common";
+import { AddScenePayload, ApiResponse, OverviewApiResponse, ProjectConfig, ProjectResponse, SceneResponse } from "./common";
 
 /**
  * 开发者自定义函数上下文。

@@ -188,10 +188,9 @@ export interface ProjectResponse {
   groups: GroupResponse[];
 }
 
-export interface ApiConfig {
-  [key: string]: any;
-}
-
+/**
+ * 项目配置
+ */
 export interface ProjectConfig {
   /**
    * 项目名称
@@ -201,10 +200,6 @@ export interface ProjectConfig {
    * 项目id
    */
   id: string | number;
-  /**
-   * TODO: api配置，可配置api的restful路径，最终在发送请求的时候，会以此配置为准来转发
-   */
-  apisConfig?: ApiConfig[];
   /**
    * 其他开发者所需字段
    */
@@ -245,7 +240,7 @@ export interface TeamConfig {
   // TODO: 未来支持url配置
   sites: SiteConfig[];
   /**
-   * 获取project和detail的脚本地址
+   * 用户自定义crud mock平台脚本地址，脚本export参考UserScript类型
    */
   scriptUrl: string;
   /**
