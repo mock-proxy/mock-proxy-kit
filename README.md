@@ -1,3 +1,8 @@
+## 安装
+```bash
+npm i mock-proxy-kit -S
+```
+
 ## 团队配置
 
 ```typescript
