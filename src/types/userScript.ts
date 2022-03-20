@@ -16,7 +16,7 @@ export type GetProjectRequest = (project: ProjectConfig, context: Context) => Pr
 /**
  * 获取api详情的请求，由开发者自定义
  */
-export type GetApiRequest = (project: ProjectConfig, api: OverviewApiResponse, context: Context) => Promise<ApiResponse>;
+export type GetApiRequest<A extends OverviewApiResponse = OverviewApiResponse> = (project: ProjectConfig, api: A, context: Context) => Promise<ApiResponse>;
 
 /**
  * 更改api场景数据，由开发者自定义

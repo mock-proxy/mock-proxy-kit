@@ -13,6 +13,11 @@ export type ApiSceneEditable = {
   */
   nameEditable?: boolean;
   /**
+   * 默认场景可否编辑（更改或删除）
+   * @default true
+   */
+  defaultSceneEditable?: boolean;
+  /**
    * 场景可否删除
    * @default false
    */
