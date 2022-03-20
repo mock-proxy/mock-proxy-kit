@@ -21,6 +21,11 @@ export type ApiSceneEditable = {
   */
   nameEditable?: boolean;
   /**
+   * 默认场景可否编辑（更改或删除）
+   * @default true
+   */
+  defaultSceneEditable?: boolean;
+  /**
    * 场景可否删除
    * @default false
    */
@@ -64,7 +69,7 @@ export interface SiteConfig {
    */
   desc?: string;
   /**
-   * 站点的域名
+   * 站点的域名，暂不支持ip和端口
    */
   domains: string[];
   /**

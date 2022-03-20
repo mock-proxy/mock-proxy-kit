@@ -225,7 +225,7 @@ export interface SiteConfig {
    */
   desc?: string;
   /**
-   * 站点的域名
+   * 站点的域名，暂不支持ip和端口
    */
   domains: string[];
   /**
