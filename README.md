@@ -3,6 +3,8 @@
 npm i mock-proxy-kit -S
 ```
 
+
+
 ## 团队配置
 
 ```typescript
@@ -193,5 +195,245 @@ export interface UserScript {
   addApiScene?: AddApiSceneRequest;
   deleteApiScene?: DeleteApiSceneRequest;
 }
+```
+
+
+
+
+
+##示例自定义脚本（oneapi）
+
+```typescript
+import {
+  ProjectConfig,
+  GroupResponse,
+  OverviewApiResponse,
+  ApiResponse,
+  SceneResponse,
+  userScript,
+  AddScenePayload
+} from 'mock-proxy-kit';
+import { OneApiQueryApi, OneApiQueryProject, ApiOverview } from './types';
+
+interface RequestMap {
+  /**
+   * key为api path；value为realPath
+   */
+  [path: string]: string;
+}
+
+interface OneapiProjectConfig extends ProjectConfig {
+  requestMap?: RequestMap;
+}
+
+const oneapiBaseUrl = 'xxxx.com';
+
+const DEFAULT_SCENE_NAME = 'default';
+
+function getMockUrl(project: OneapiProjectConfig, api: ApiOverview, groupName?: string): string {
+  return `${oneapiBaseUrl}/mock/${project.id}/${api.apiName}${groupName ? `?_tag=${groupName}` : ''}`;
+}
+
+function getSourceUrl(project: OneapiProjectConfig, api: ApiOverview): string {
+  return `${oneapiBaseUrl}/eapi/interface-manager?projectCode=${project.id}&apiName=${encodeURIComponent(api.apiName)}&method=${api.method}`;
+}
+
+/**
+ * 获取项目及分组及接口概览（项目 => 分组 => 接口概览）
+ * @required
+**/
+export const getProject: userScript.GetProjectRequest = (project: OneapiProjectConfig, context: userScript.Context) => {
+  return context.fetchJSON<OneApiQueryProject>(`${oneapiBaseUrl}/api/oneapi/group/query?projectCode=${project.id}`).then((res) => {
+    if (!res.success) throw new Error('获取项目失败');
+
+    const defaultGroup: GroupResponse = {
+      id: 'default',
+      name: '默认分组',
+      apis: (res.content.apis || []).map(api => {
+        const realPath = project.requestMap?.[api.apiName] || api.apiName;
+        const ret: OverviewApiResponse = {
+          id: api.id,
+          name: api.description,
+          method: api.method,
+          path: api.apiName,
+          realPath,
+          creator: api.creator?.nickName,
+          mockUrl: getMockUrl(project, api),
+          sourceUrl: getSourceUrl(project, api),
+          // 补充restful、多前缀等逻辑
+          // regexFilter
+        };
+        return ret;
+      }),
+    }
+
+    const otherGroups: GroupResponse[] = (res.content.catalogs || []).map(group => {
+      const ret: GroupResponse = {
+        id: group.id,
+        name: group.name,
+        apis: (group.apis || []).map(api => {
+          const realPath = project.requestMap?.[api.apiName] || api.apiName;
+          const ret: OverviewApiResponse = {
+            id: api.id,
+            name: api.description,
+            method: api.method,
+            path: api.apiName,
+            realPath,
+            creator: api.creator?.nickName,
+            mockUrl: getMockUrl(project, api),
+            sourceUrl: getSourceUrl(project, api),
+            // 补充多前缀等逻辑
+            // regexFilter
+          };
+          return ret;
+        }),
+      };
+      return ret;
+    });
+
+    const groups = [defaultGroup, ...otherGroups]
+
+    return {
+      groups
+    }
+  });
+}
+
+/**
+ * 获取api及场景详情
+ * @required
+**/
+export const getApi: userScript.GetApiRequest = (project: OneapiProjectConfig, api: OverviewApiResponse, context: userScript.Context) => {
+  return context.fetchJSON<OneApiQueryApi>(`${oneapiBaseUrl}/api/info/getApi?projectCode=${project.id}&apiName=${encodeURIComponent(api.path)}`).then((res) => {
+    if (!res.success) throw new Error('获取接口失败');
+    const scenes: SceneResponse[] = [];
+
+    Object.entries(res.content.tagResponses).forEach(([groupName, mockData]) => {
+      scenes.push({
+        // oneapi不允许存在相同的场景名称
+        id: groupName,
+        name: groupName,
+        // 如果mockUrl没有queryString，则当接口匹配上后，会将后面的queryString拼接到mockUrl上，从而可以实现：同一个接口，带不同tag，代理到不同场景
+        mockUrl: getMockUrl(project, res.content, groupName === DEFAULT_SCENE_NAME ? '' : groupName),
+        mockData: mockData,
+      })
+    })
+
+    const realPath = project.requestMap?.[res.content.apiName] || res.content.apiName;
+
+    const ret: ApiResponse = {
+      id: res.content.id,
+      name: res.content.description,
+      // desc: res.content.description,
+      method: res.content.method,
+      path: res.content.apiName,
+      realPath,
+      creator: res.content.creator?.nickName,
+      mockUrl: getMockUrl(project, res.content),
+      sourceUrl: getSourceUrl(project, res.content),
+      mockData: res.content.tagResponses?.default,
+      scenes
+    };
+    return ret;
+  });
+}
+
+                                                                                                                                                      /**
+ * 更新api场景
+ * @not-required
+**/
+export const updateApiScene: userScript.UpdateApiSceneRequest<{
+  success: boolean
+}> = (project: OneapiProjectConfig, api: ApiResponse, scene: SceneResponse, context: userScript.Context) => {
+  const payload = {
+    apiName: api.path,
+    projectCode: project.id,
+    tagName: scene.name,
+    tagResponse: scene.mockData,
+    csrf: '',
+  };
+
+  return context.fetchJSON<{
+    success: boolean
+  }>(`${oneapiBaseUrl}/api/info/updateTag`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then((res) => {
+    if (!res.success) throw new Error('更新失败');
+    return res;
+  });
+}
+
+/**
+ * 添加api场景
+ * @not-required
+**/
+export const addApiScene: userScript.AddApiSceneRequest = (
+  project: OneapiProjectConfig,
+  api: ApiResponse,
+  scene: AddScenePayload,
+  context: userScript.Context
+) => {
+    const payload = {
+      apiName: api.path,
+      projectCode: project.id,
+      tagName: scene.name,
+      tagResponse: scene.mockData,
+      csrf: '',
+    };
+
+    return context.fetchJSON<{
+      success: boolean
+      content: string
+    }>(`${oneapiBaseUrl}/api/info/createTag`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => {
+      if (!res.success) throw new Error('创建失败');
+      return {
+        id: res.content
+      };
+    });
+  }
+
+/**
+ * 删除api场景
+ * @not-required
+**/
+export const deleteApiScene: userScript.DeleteApiSceneRequest<{
+  success: boolean
+}> = (
+  project: OneapiProjectConfig,
+  api: ApiResponse,
+  scene: SceneResponse,
+  context: userScript.Context
+) => {
+    const payload = {
+      apiName: api.path,
+      projectCode: project.id,
+      tagName: scene.name,
+      csrf: '',
+    };
+
+    return context.fetchJSON<{
+      success: boolean
+    }>(`${oneapiBaseUrl}/api/info/deleteTag`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => {
+      if (!res.success) throw new Error('删除失败');
+      return res;
+    });
+  }
+
 ```
 
