@@ -201,7 +201,7 @@ export interface UserScript {
 
 
 
-##示例自定义脚本（oneapi）
+## 示例自定义脚本（oneapi）
 
 ```typescript
 import {
@@ -338,7 +338,7 @@ export const getApi: userScript.GetApiRequest = (project: OneapiProjectConfig, a
   });
 }
 
-                                                                                                                                                      /**
+/**
  * 更新api场景
  * @notrequired
 **/
