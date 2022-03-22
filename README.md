@@ -340,7 +340,7 @@ export const getApi: userScript.GetApiRequest = (project: OneapiProjectConfig, a
 
                                                                                                                                                       /**
  * 更新api场景
- * @not-required
+ * @notrequired
 **/
 export const updateApiScene: userScript.UpdateApiSceneRequest<{
   success: boolean
@@ -369,7 +369,7 @@ export const updateApiScene: userScript.UpdateApiSceneRequest<{
 
 /**
  * 添加api场景
- * @not-required
+ * @notrequired
 **/
 export const addApiScene: userScript.AddApiSceneRequest = (
   project: OneapiProjectConfig,
@@ -404,7 +404,7 @@ export const addApiScene: userScript.AddApiSceneRequest = (
 
 /**
  * 删除api场景
- * @not-required
+ * @notrequired
 **/
 export const deleteApiScene: userScript.DeleteApiSceneRequest<{
   success: boolean
