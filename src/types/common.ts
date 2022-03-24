@@ -206,6 +206,12 @@ export interface ProjectConfig {
    */
   id: string | number;
   /**
+   * 是否跨源。如果该项目请求与domain非同源，则跨源
+   * 若跨源，会给redirect url加上标识，这样CORS处理时，匹配到该标识，AC头可返回null，解决跨源问题
+   * @default false
+   */
+   crossOrigin?: boolean;
+  /**
    * 其他开发者所需字段
    */
   [key: string]: any;
