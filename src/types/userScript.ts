@@ -6,6 +6,10 @@ import { AddScenePayload, ApiResponse, OverviewApiResponse, ProjectConfig, Proje
  */
 export interface Context {
   fetchJSON: <Response = any>(...args: Parameters<typeof fetch>) => Promise<Response>;
+  tabInfo: {
+    url: string;
+    userAgent: string;
+  }
 }
 
 /**
