@@ -11,7 +11,7 @@ npm i mock-proxy-kit -S
 /**
  * api场景可否编辑
  */
-export type ApiSceneEditable = {
+ export type ApiSceneEditable = {
   /**
    * 场景可否更改
    * @default false
@@ -39,178 +39,10 @@ export type ApiSceneEditable = {
   addable?: boolean;
 } | boolean;
 
-export interface SceneResponse {
-  /**
-   * 场景id
-   */
-  id: string | number;
-  /**
-   * 场景名称
-   */
-  name: string;
-  /**
-   * 场景数据
-   */
-  mockData: any;
-  /**
-   * 场景mock地址
-   */
-  mockUrl: string;
-  /**
-   * 用户自定义数据
-   */
-  [key: string]: any;
-}
-
-export interface AddScenePayload {
-  /**
-   * 场景名称
-   */
-  name: string;
-  /**
-   * 场景数据
-   */
-  mockData: any;
-}
-
-export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'ALL';
-
-export type OverviewApiResponse = {
-  /**
-   * api id
-   */
-  id: number | string;
-  /**
-   * api path, 标识mock平台的api路径，未必是真实的路径
-   */
-  path: string;
-  /**
-   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
-   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
-   * 但真实路径其实是：api/resource/{resourceId}
-   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
-   */
-  realPath?: string;
-  /**
-   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
-   * @see RE2 syntax
-   */
-  regexFilter?: string;
-  /**
-   * api method
-   */
-  method: ApiMethod;
-  /**
-   * api名称
-   */
-  name: string;
-  /**
-   * api描述
-   */
-  desc?: string;
-  /**
-   * api创建者
-   */
-  creator?: string;
-  /**
-   * mock地址
-   */
-  mockUrl: string;
-  /**
-   * 原接口地址
-   */
-  sourceUrl?: string;
-  /**
-   * 用户自定义数据
-   */
-  [key: string]: any;
-}
-
-export interface ApiResponse {
-  /**
-   * api id
-   */
-  id: number | string;
-  /**
-   * api path, 标识mock平台的api路径，未必是真实的路径
-   */
-  path: string;
-  /**
-   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
-   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
-   * 但真实路径其实是：api/resource/{resourceId}
-   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
-   */
-  realPath?: string;
-  /**
-   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
-   * @see RE2 syntax
-   */
-  regexFilter?: string;
-  /**
-   * api method
-   */
-  method: ApiMethod;
-  /**
-   * api名称
-   */
-  name: string;
-  /**
-   * api描述
-   */
-  desc?: string;
-  /**
-   * api创建者
-   */
-  creator?: string;
-  /**
-   * mock地址
-   */
-  mockUrl: string;
-  /**
-   * mock数据
-   */
-  mockData: any;
-  /**
-   * 原接口地址
-   */
-  sourceUrl?: string;
-  /**
-   * 多场景数据
-   */
-  scenes?: SceneResponse[];
-  /**
-   * 用户自定义数据
-   */
-  [key: string]: any;
-}
-
-export interface GroupResponse {
-  /**
-  * 分组id
-  */
-  id: number | string;
-  /**
-   * 分组名
-   */
-  name: string;
-  /**
-   * api返回
-   */
-  apis: OverviewApiResponse[];
-}
-
-export interface ProjectResponse {
-  /**
-   * 分组返回
-   */
-  groups: GroupResponse[];
-}
-
 /**
  * 项目配置
  */
-export interface ProjectConfig {
+ export interface ProjectConfig {
   /**
    * 项目名称
    */
@@ -231,6 +63,9 @@ export interface ProjectConfig {
   [key: string]: any;
 }
 
+/**
+ * 站点配置
+ */
 export interface SiteConfig {
   /**
    * 站点名称，比如github
@@ -306,14 +141,204 @@ export interface TeamConfig {
 ## 用户自定义脚本
 
 ```typescript
-import {
-  AddScenePayload,
-  ApiResponse,
-  OverviewApiResponse,
-  ProjectConfig,
-  ProjectResponse,
-  SceneResponse
-} from "./common";
+import { ProjectConfig } from "./teamConfig";
+
+/**
+ * api方法
+ */
+export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'ALL';
+
+/**
+ * 面板中api场景的返回值
+ */
+export interface SceneResponse {
+  /**
+   * 场景id
+   */
+  id: string | number;
+  /**
+   * 场景名称
+   */
+  name: string;
+  /**
+   * 场景数据
+   */
+  mockData: any;
+  /**
+   * 场景mock地址
+   */
+  mockUrl: string;
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+/**
+ * 面板中添加api场景的payload
+ */
+export interface AddScenePayload {
+  /**
+   * 场景名称
+   */
+  name: string;
+  /**
+   * 场景数据
+   */
+  mockData: any;
+}
+
+/**
+ * 面板中添加api场景的response
+ */
+export interface AddSceneResponse {
+  id: string | number;
+  [key: string]: any;
+}
+
+/**
+ * 面板中接口概览的返回值
+ */
+export type OverviewApiResponse = {
+  /**
+   * api id
+   */
+  id: number | string;
+  /**
+   * api path, 标识mock平台的api路径，未必是真实的路径
+   */
+  path: string;
+  /**
+   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
+   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
+   * 但真实路径其实是：api/resource/{resourceId}
+   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
+   */
+  realPath?: string;
+  /**
+   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
+   * @see RE2 syntax
+   */
+  regexFilter?: string;
+  /**
+   * api method
+   */
+  method: ApiMethod;
+  /**
+   * api名称
+   */
+  name: string;
+  /**
+   * api描述
+   */
+  desc?: string;
+  /**
+   * api创建者
+   */
+  creator?: string;
+  /**
+   * mock地址
+   */
+  mockUrl: string;
+  /**
+   * 原接口地址
+   */
+  sourceUrl?: string;
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+/**
+ * 面板中接口详情的返回值
+ */
+export interface ApiResponse {
+  /**
+   * api id
+   */
+  id: number | string;
+  /**
+   * api path, 标识mock平台的api路径，未必是真实的路径
+   */
+  path: string;
+  /**
+   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
+   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
+   * 但真实路径其实是：api/resource/{resourceId}
+   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
+   */
+  realPath?: string;
+  /**
+   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
+   * @see RE2 syntax
+   */
+  regexFilter?: string;
+  /**
+   * api method
+   */
+  method: ApiMethod;
+  /**
+   * api名称
+   */
+  name: string;
+  /**
+   * api描述
+   */
+  desc?: string;
+  /**
+   * api创建者
+   */
+  creator?: string;
+  /**
+   * mock地址
+   */
+  mockUrl: string;
+  /**
+   * mock数据
+   */
+  mockData: any;
+  /**
+   * 原接口地址
+   */
+  sourceUrl?: string;
+  /**
+   * 多场景数据
+   */
+  scenes?: SceneResponse[];
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+/**
+ * 面板中接口分组的返回值
+ */
+export interface GroupResponse {
+  /**
+  * 分组id
+  */
+  id: number | string;
+  /**
+   * 分组名
+   */
+  name: string;
+  /**
+   * api返回
+   */
+  apis: OverviewApiResponse[];
+}
+
+/**
+ * 面板中项目的返回值
+ */
+export interface ProjectResponse {
+  /**
+   * 分组返回
+   */
+  groups: GroupResponse[];
+}
 
 /**
  * 开发者自定义函数上下文。
@@ -365,15 +390,10 @@ export type UpdateApiSceneRequest<
 /**
  * 添加api场景，由开发者自定义
  */
-interface AddApiSceneResponse {
-  id: string | number;
-  [k: string]: any;
-}
-
 export type AddApiSceneRequest<
   P extends ProjectConfig = ProjectConfig,
   A extends ApiResponse = ApiResponse,
-  R extends AddApiSceneResponse = AddApiSceneResponse,
+  R extends AddSceneResponse = AddSceneResponse,
   > = (
     project: P,
     api: A,
@@ -419,9 +439,9 @@ import {
   ApiResponse,
   SceneResponse,
   userScript,
-  AddScenePayload
+  AddSceneResponse
 } from 'mock-proxy-kit';
-import { OneApiQueryApi, OneApiQueryProject, ApiOverview } from './types';
+import { OneApiQueryApi, OneApiQueryProject, OneapiApiOverview } from './types';
 
 interface RequestMap {
   /**
@@ -434,23 +454,54 @@ interface OneapiProjectConfig extends ProjectConfig {
   requestMap?: RequestMap;
 }
 
-const oneapiBaseUrl = 'xxxx.com';
+interface OneapiOverviewApiResponse extends OverviewApiResponse {
+}
+
+interface OneapiApiResponse extends ApiResponse {
+}
+
+interface OneapiAddSceneResponse extends AddSceneResponse {
+}
+
+interface OneapiSceneResponse extends SceneResponse {
+}
+
+const oneapiBaseUrl = 'https://xxx.com';
 
 const DEFAULT_SCENE_NAME = 'default';
 
-function getMockUrl(project: OneapiProjectConfig, api: ApiOverview, groupName?: string): string {
+// 如果描述有mtop，则认为该接口是mtop接口，将描述作为真实路径
+function getRealPath(project: OneapiProjectConfig, api: OneapiApiOverview): string {
+  if ((api.description || '').includes('mtop')) return api.description as string;
+
+  return project.requestMap?.[api.apiName] || api.apiName;
+}
+
+function isMtopPath(realPath: string) {
+  return realPath.startsWith('/mtop') || realPath.startsWith('mtop');
+}
+
+function getMockUrl(project: OneapiProjectConfig, api: OneapiApiOverview, realPath: string, groupName?: string): string {
+  if (isMtopPath(realPath)) {
+    return `${oneapiBaseUrl}/mock/${project.id}/${api.apiName}${groupName ? `?_tag=${groupName}&wrapper=mtop` : '?wrapper=mtop'}`;
+  }
+
   return `${oneapiBaseUrl}/mock/${project.id}/${api.apiName}${groupName ? `?_tag=${groupName}` : ''}`;
 }
 
-function getSourceUrl(project: OneapiProjectConfig, api: ApiOverview): string {
+function getSourceUrl(project: OneapiProjectConfig, api: OneapiApiOverview): string {
   return `${oneapiBaseUrl}/eapi/interface-manager?projectCode=${project.id}&apiName=${encodeURIComponent(api.apiName)}&method=${api.method}`;
 }
 
-/**
- * 获取项目及分组及接口概览（项目 => 分组 => 接口概览）
- * @required
-**/
-export const getProject: userScript.GetProjectRequest = (project: OneapiProjectConfig, context: userScript.Context) => {
+function getApiRegExp(realPath: string) {
+  if (isMtopPath(realPath)) {
+    return `\\w+/${realPath.replace(/\./g, '\\.')}/\\d\\.\\d\/?`
+  }
+
+  return '';
+}
+
+export const getProject: userScript.GetProjectRequest<OneapiProjectConfig> = (project, context) => {
   return context.fetchJSON<OneApiQueryProject>(`${oneapiBaseUrl}/api/oneapi/group/query?projectCode=${project.id}`).then((res) => {
     if (!res.success) throw new Error('获取项目失败');
 
@@ -458,16 +509,17 @@ export const getProject: userScript.GetProjectRequest = (project: OneapiProjectC
       id: 'default',
       name: '默认分组',
       apis: (res.content.apis || []).map(api => {
-        const realPath = project.requestMap?.[api.apiName] || api.apiName;
+        const realPath = getRealPath(project, api);
         const ret: OverviewApiResponse = {
           id: api.id,
-          name: api.description,
+          name: api.description || '',
           method: api.method,
           path: api.apiName,
           realPath,
           creator: api.creator?.nickName,
-          mockUrl: getMockUrl(project, api),
+          mockUrl: getMockUrl(project, api, realPath),
           sourceUrl: getSourceUrl(project, api),
+          regexFilter: getApiRegExp(realPath),
           // 补充restful、多前缀等逻辑
           // regexFilter
         };
@@ -480,15 +532,15 @@ export const getProject: userScript.GetProjectRequest = (project: OneapiProjectC
         id: group.id,
         name: group.name,
         apis: (group.apis || []).map(api => {
-          const realPath = project.requestMap?.[api.apiName] || api.apiName;
+          const realPath = getRealPath(project, api);
           const ret: OverviewApiResponse = {
             id: api.id,
-            name: api.description,
+            name: api.description || '',
             method: api.method,
             path: api.apiName,
             realPath,
             creator: api.creator?.nickName,
-            mockUrl: getMockUrl(project, api),
+            mockUrl: getMockUrl(project, api, realPath),
             sourceUrl: getSourceUrl(project, api),
             // 补充多前缀等逻辑
             // regexFilter
@@ -507,37 +559,38 @@ export const getProject: userScript.GetProjectRequest = (project: OneapiProjectC
   });
 }
 
-/**
- * 获取api及场景详情
- * @required
-**/
-export const getApi: userScript.GetApiRequest = (project: OneapiProjectConfig, api: OverviewApiResponse, context: userScript.Context) => {
+export const getApi: userScript.GetApiRequest<OneapiProjectConfig, OneapiOverviewApiResponse, OneapiApiResponse> = (project, api, context) => {
   return context.fetchJSON<OneApiQueryApi>(`${oneapiBaseUrl}/api/info/getApi?projectCode=${project.id}&apiName=${encodeURIComponent(api.path)}`).then((res) => {
     if (!res.success) throw new Error('获取接口失败');
     const scenes: SceneResponse[] = [];
+
+    const realPath = getRealPath(project, res.content);
 
     Object.entries(res.content.tagResponses).forEach(([groupName, mockData]) => {
       scenes.push({
         // oneapi不允许存在相同的场景名称
         id: groupName,
         name: groupName,
-        // 如果mockUrl没有queryString，则当接口匹配上后，会将后面的queryString拼接到mockUrl上，从而可以实现：同一个接口，带不同tag，代理到不同场景
-        mockUrl: getMockUrl(project, res.content, groupName === DEFAULT_SCENE_NAME ? '' : groupName),
+        mockUrl: getMockUrl(
+          project,
+          res.content,
+          realPath,
+          groupName === DEFAULT_SCENE_NAME ? '' : groupName
+        ),
         mockData: mockData,
       })
     })
 
-    const realPath = project.requestMap?.[res.content.apiName] || res.content.apiName;
-
     const ret: ApiResponse = {
       id: res.content.id,
-      name: res.content.description,
+      name: res.content.description || '',
       // desc: res.content.description,
       method: res.content.method,
       path: res.content.apiName,
       realPath,
+      regexFilter: getApiRegExp(realPath),
       creator: res.content.creator?.nickName,
-      mockUrl: getMockUrl(project, res.content),
+      mockUrl: getMockUrl(project, res.content, realPath),
       sourceUrl: getSourceUrl(project, res.content),
       mockData: res.content.tagResponses?.default,
       scenes
@@ -546,44 +599,15 @@ export const getApi: userScript.GetApiRequest = (project: OneapiProjectConfig, a
   });
 }
 
-/**
- * 更新api场景
- * @notrequired
-**/
-export const updateApiScene: userScript.UpdateApiSceneRequest<{
-  success: boolean
-}> = (project: OneapiProjectConfig, api: ApiResponse, scene: SceneResponse, context: userScript.Context) => {
-  const payload = {
-    apiName: api.path,
-    projectCode: project.id,
-    tagName: scene.name,
-    tagResponse: scene.mockData,
-    csrf: '',
-  };
-
-  return context.fetchJSON<{
-    success: boolean
-  }>(`${oneapiBaseUrl}/api/info/updateTag`, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  }).then((res) => {
-    if (!res.success) throw new Error('更新失败');
-    return res;
-  });
-}
-
-/**
- * 添加api场景
- * @notrequired
-**/
-export const addApiScene: userScript.AddApiSceneRequest = (
-  project: OneapiProjectConfig,
-  api: ApiResponse,
-  scene: AddScenePayload,
-  context: userScript.Context
+export const addApiScene: userScript.AddApiSceneRequest<
+  OneapiProjectConfig,
+  OneapiApiResponse,
+  OneapiAddSceneResponse
+> = (
+  project,
+  api,
+  scene,
+  context
 ) => {
     const payload = {
       apiName: api.path,
@@ -610,17 +634,48 @@ export const addApiScene: userScript.AddApiSceneRequest = (
     });
   }
 
-/**
- * 删除api场景
- * @notrequired
-**/
-export const deleteApiScene: userScript.DeleteApiSceneRequest<{
-  success: boolean
-}> = (
-  project: OneapiProjectConfig,
-  api: ApiResponse,
-  scene: SceneResponse,
-  context: userScript.Context
+export const updateApiScene: userScript.UpdateApiSceneRequest<
+  OneapiProjectConfig,
+  OneapiApiResponse,
+  OneapiSceneResponse,
+  {
+    success: boolean
+  }
+> = (project, api, scene, context) => {
+  const payload = {
+    apiName: api.path,
+    projectCode: project.id,
+    tagName: scene.name,
+    tagResponse: scene.mockData,
+    csrf: '',
+  };
+
+  return context.fetchJSON<{
+    success: boolean
+  }>(`${oneapiBaseUrl}/api/info/updateTag`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then((res) => {
+    if (!res.success) throw new Error('更新失败');
+    return res;
+  });
+}
+
+export const deleteApiScene: userScript.DeleteApiSceneRequest<
+  OneapiProjectConfig,
+  OneapiApiResponse,
+  OneapiSceneResponse,
+  {
+    success: boolean
+  }
+> = (
+  project,
+  api,
+  scene,
+  context,
 ) => {
     const payload = {
       apiName: api.path,
