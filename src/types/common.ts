@@ -46,6 +46,10 @@ export interface SceneResponse {
    * 场景mock地址
    */
   mockUrl: string;
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
 }
 
 export interface AddScenePayload {
@@ -274,7 +278,6 @@ export interface TeamConfig {
   configPageUrl?: string;
   /**
    * 可否编辑api场景（增加场景、修改mock数据）
-   * TODO: 未来考虑支持rap2，其默认场景不可编辑。需要新增配置
    * @default false
    */
   apiSceneEditable?: ApiSceneEditable;

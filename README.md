@@ -39,6 +39,174 @@ export type ApiSceneEditable = {
   addable?: boolean;
 } | boolean;
 
+export interface SceneResponse {
+  /**
+   * 场景id
+   */
+  id: string | number;
+  /**
+   * 场景名称
+   */
+  name: string;
+  /**
+   * 场景数据
+   */
+  mockData: any;
+  /**
+   * 场景mock地址
+   */
+  mockUrl: string;
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+export interface AddScenePayload {
+  /**
+   * 场景名称
+   */
+  name: string;
+  /**
+   * 场景数据
+   */
+  mockData: any;
+}
+
+export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH' | 'ALL';
+
+export type OverviewApiResponse = {
+  /**
+   * api id
+   */
+  id: number | string;
+  /**
+   * api path, 标识mock平台的api路径，未必是真实的路径
+   */
+  path: string;
+  /**
+   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
+   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
+   * 但真实路径其实是：api/resource/{resourceId}
+   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
+   */
+  realPath?: string;
+  /**
+   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
+   * @see RE2 syntax
+   */
+  regexFilter?: string;
+  /**
+   * api method
+   */
+  method: ApiMethod;
+  /**
+   * api名称
+   */
+  name: string;
+  /**
+   * api描述
+   */
+  desc?: string;
+  /**
+   * api创建者
+   */
+  creator?: string;
+  /**
+   * mock地址
+   */
+  mockUrl: string;
+  /**
+   * 原接口地址
+   */
+  sourceUrl?: string;
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+export interface ApiResponse {
+  /**
+   * api id
+   */
+  id: number | string;
+  /**
+   * api path, 标识mock平台的api路径，未必是真实的路径
+   */
+  path: string;
+  /**
+   * 真实的api路径，界面展示路径也会用此字段。如果没有，则用path。
+   * @example 比如oneapi如果存在某个资源的get和delete restful接口，那么api path会是get/api/* resource/ resourceId和delete/api/resource/resourceId
+   * 但真实路径其实是：api/resource/{resourceId}
+   * @caution 注意，如果真实路径带有{}，插件会自动将其转为regexp，当网页中发送，api/resource/* xxx时，可顺利匹配到规则进行转发
+   */
+  realPath?: string;
+  /**
+   * 如果申明了，会以此为规则的regexFilter。优先级 regexFilter > realPath > path
+   * @see RE2 syntax
+   */
+  regexFilter?: string;
+  /**
+   * api method
+   */
+  method: ApiMethod;
+  /**
+   * api名称
+   */
+  name: string;
+  /**
+   * api描述
+   */
+  desc?: string;
+  /**
+   * api创建者
+   */
+  creator?: string;
+  /**
+   * mock地址
+   */
+  mockUrl: string;
+  /**
+   * mock数据
+   */
+  mockData: any;
+  /**
+   * 原接口地址
+   */
+  sourceUrl?: string;
+  /**
+   * 多场景数据
+   */
+  scenes?: SceneResponse[];
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+export interface GroupResponse {
+  /**
+  * 分组id
+  */
+  id: number | string;
+  /**
+   * 分组名
+   */
+  name: string;
+  /**
+   * api返回
+   */
+  apis: OverviewApiResponse[];
+}
+
+export interface ProjectResponse {
+  /**
+   * 分组返回
+   */
+  groups: GroupResponse[];
+}
+
 /**
  * 项目配置
  */
@@ -56,7 +224,7 @@ export interface ProjectConfig {
    * 若跨源，会给redirect url加上标识，这样CORS处理时，匹配到该标识，AC头可返回null，解决跨源问题
    * @default false
    */
-  crossOrigin?: boolean;
+   crossOrigin?: boolean;
   /**
    * 其他开发者所需字段
    */
@@ -138,7 +306,14 @@ export interface TeamConfig {
 ## 用户自定义脚本
 
 ```typescript
-import { AddScenePayload, ApiResponse, OverviewApiResponse, ProjectConfig, ProjectResponse, SceneResponse } from "./common";
+import {
+  AddScenePayload,
+  ApiResponse,
+  OverviewApiResponse,
+  ProjectConfig,
+  ProjectResponse,
+  SceneResponse
+} from "./common";
 
 /**
  * 开发者自定义函数上下文。
@@ -146,54 +321,81 @@ import { AddScenePayload, ApiResponse, OverviewApiResponse, ProjectConfig, Proje
  */
 export interface Context {
   fetchJSON: <Response = any>(...args: Parameters<typeof fetch>) => Promise<Response>;
+  tabInfo: {
+    url: string;
+    userAgent: string;
+  }
 }
 
 /**
  * 获取project详情的请求，由开发者自定义
  */
-export type GetProjectRequest = (project: ProjectConfig, context: Context) => Promise<ProjectResponse>;
+export type GetProjectRequest<
+  P extends ProjectConfig = ProjectConfig,
+  R extends ProjectResponse = ProjectResponse
+  > = (
+    project: P,
+    context: Context
+  ) => Promise<R>;
 
 /**
  * 获取api详情的请求，由开发者自定义
  */
-export type GetApiRequest = (project: ProjectConfig, api: OverviewApiResponse, context: Context) => Promise<ApiResponse>;
+export type GetApiRequest<
+  P extends ProjectConfig = ProjectConfig,
+  A extends OverviewApiResponse = OverviewApiResponse,
+  R extends ApiResponse = ApiResponse
+  > = (project: P, api: A, context: Context) => Promise<R>;
 
 /**
  * 更改api场景数据，由开发者自定义
  */
-export type UpdateApiSceneRequest<Response = any> = (
-  project: ProjectConfig,
-  api: ApiResponse,
-  scene: SceneResponse,
-  context: Context
-) => Promise<Response>;
+export type UpdateApiSceneRequest<
+  P extends ProjectConfig = ProjectConfig,
+  A extends ApiResponse = ApiResponse,
+  S extends SceneResponse = SceneResponse,
+  R = any
+  > = (
+    project: P,
+    api: A,
+    scene: S,
+    context: Context
+  ) => Promise<R>;
 
 /**
  * 添加api场景，由开发者自定义
  */
-export type AddApiSceneRequest = (
-  project: ProjectConfig,
-  api: ApiResponse,
-  scene: AddScenePayload,
-  context: Context
-) => Promise<{
+interface AddApiSceneResponse {
   id: string | number;
   [k: string]: any;
-}>;
+}
+
+export type AddApiSceneRequest<
+  P extends ProjectConfig = ProjectConfig,
+  A extends ApiResponse = ApiResponse,
+  R extends AddApiSceneResponse = AddApiSceneResponse,
+  > = (
+    project: P,
+    api: A,
+    scene: AddScenePayload,
+    context: Context
+  ) => Promise<R>;
 
 /**
  * 删除api场景，由开发者自定义
  */
-export type DeleteApiSceneRequest<Response = any> = (
-  project: ProjectConfig,
-  api: ApiResponse,
-  scene: SceneResponse,
-  context: Context
-) => Promise<Response>;
+export type DeleteApiSceneRequest<
+  P extends ProjectConfig = ProjectConfig,
+  A extends ApiResponse = ApiResponse,
+  S extends SceneResponse = SceneResponse,
+  R = any
+  > = (
+    project: P,
+    api: A,
+    scene: S,
+    context: Context
+  ) => Promise<R>;
 
-/**
- * 用户自定义脚本集合
- */
 export interface UserScript {
   getProject: GetProjectRequest;
   getApi: GetApiRequest;
