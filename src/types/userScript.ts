@@ -57,9 +57,9 @@ export type UpdateApiSceneRequest<
 /**
  * 添加api场景，由开发者自定义
  */
-interface AddApiSceneResponse {
+ export interface AddApiSceneResponse {
   id: string | number;
-  [k: string]: any;
+  [key: string]: any;
 }
 
 export type AddApiSceneRequest<
