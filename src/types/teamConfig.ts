@@ -1,7 +1,18 @@
 /**
+ * api可否编辑
+ */
+export type ApiEditable = {
+  /**
+   * 是否可移动分组
+   * @default false
+   */
+  movable?: boolean;
+} | boolean;
+
+/**
  * api场景可否编辑
  */
- export type ApiSceneEditable = {
+export type ApiSceneEditable = {
   /**
    * 场景可否更改
    * @default false
@@ -32,7 +43,7 @@
 /**
  * 项目配置
  */
- export interface ProjectConfig {
+export interface ProjectConfig {
   /**
    * 项目名称
    */
@@ -46,7 +57,7 @@
    * 若跨源，会给redirect url加上标识，这样CORS处理时，匹配到该标识，AC头可返回null，解决跨源问题
    * @default false
    */
-   crossOrigin?: boolean;
+  crossOrigin?: boolean;
   /**
    * 其他开发者所需字段
    */
@@ -111,6 +122,11 @@ export interface TeamConfig {
    * 配置页面地址，用于在未匹配上配置时，提示跳转
    */
   configPageUrl?: string;
+  /**
+   * 可否编辑api（改变分组）
+   * @default false
+   */
+  apiEditable?: ApiEditable;
   /**
    * 可否编辑api场景（增加场景、修改mock数据）
    * @default false
