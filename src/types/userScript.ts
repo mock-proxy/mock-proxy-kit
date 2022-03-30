@@ -47,7 +47,13 @@ export interface AddScenePayload {
  * 面板中添加api场景的response
  */
 export interface AddSceneResponse {
+  /**
+   * 新增场景id
+   */
   id: string | number;
+  /**
+   * 用户自定义数据
+   */
   [key: string]: any;
 }
 
@@ -183,6 +189,10 @@ export interface GroupResponse {
    * api返回
    */
   apis: OverviewApiResponse[];
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
 }
 
 /**
@@ -193,6 +203,19 @@ export interface ProjectResponse {
    * 分组返回
    */
   groups: GroupResponse[];
+  /**
+   * 用户自定义数据
+   */
+  [key: string]: any;
+}
+
+interface RequestParams {
+  projectConfig: ProjectConfig;
+  projectResponse: ProjectResponse;
+  groupResponse: GroupResponse;
+  overviewApiResponse: OverviewApiResponse;
+  apiResponse: ApiResponse;
+  sceneResponse: SceneResponse;
 }
 
 /**
@@ -200,9 +223,21 @@ export interface ProjectResponse {
  * 可通过fetchJson，拉取或向服务端传递json数据，不受同源限制，拥有高权限
  */
 export interface Context {
+  /**
+   * 跟fetch一致，会自动res.json()
+   */
   fetchJSON: <Response = any>(...args: Parameters<typeof fetch>) => Promise<Response>;
+  /**
+   * 当前页面信息
+   */
   tabInfo: {
+    /**
+     * 页面的url
+     */
     url: string;
+    /**
+     * 页面的ua
+     */
     userAgent: string;
   }
 }
@@ -210,70 +245,104 @@ export interface Context {
 /**
  * 获取project详情的请求，由开发者自定义
  */
+export type GetProjectRequestParams = Pick<RequestParams, 'projectConfig'>;
 export type GetProjectRequest<
-  P extends ProjectConfig = ProjectConfig,
+  P extends GetProjectRequestParams = GetProjectRequestParams,
   R extends ProjectResponse = ProjectResponse
   > = (
-    project: P,
+    params: {
+      projectConfig: P['projectConfig']
+    },
     context: Context
   ) => Promise<R>;
 
 /**
  * 获取api详情的请求，由开发者自定义
  */
+export type GetApiRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'overviewApiResponse'>;
 export type GetApiRequest<
-  P extends ProjectConfig = ProjectConfig,
-  A extends OverviewApiResponse = OverviewApiResponse,
+  P extends GetApiRequestParams = GetApiRequestParams,
   R extends ApiResponse = ApiResponse
-  > = (project: P, api: A, context: Context) => Promise<R>;
+  > = (params: {
+    projectConfig: P['projectConfig'];
+    projectResponse: P['projectResponse'];
+    overviewApiResponse: P['overviewApiResponse'];
+  }, context: Context) => Promise<R>;
+
+/**
+* 移动api到其它分组的请求，由开发者自定义
+*/
+export type MoveApiRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'groupResponse' | 'apiResponse'>;
+export type MoveApiRequest<
+  P extends MoveApiRequestParams = MoveApiRequestParams,
+  R = any
+  > = (
+    params: {
+      projectConfig: P['projectConfig'];
+      projectResponse: P['projectResponse'];
+      groupPayload: P['groupResponse'];
+      apiResponse: P['apiResponse'];
+    },
+    context: Context
+  ) => Promise<R>;
 
 /**
  * 更改api场景数据，由开发者自定义
  */
+export type UpdateApiSceneRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'apiResponse' | 'sceneResponse'>;
 export type UpdateApiSceneRequest<
-  P extends ProjectConfig = ProjectConfig,
-  A extends ApiResponse = ApiResponse,
-  S extends SceneResponse = SceneResponse,
+  P extends UpdateApiSceneRequestParams = UpdateApiSceneRequestParams,
   R = any
   > = (
-    project: P,
-    api: A,
-    scene: S,
+    params: {
+      projectConfig: P['projectConfig'];
+      projectResponse: P['projectResponse'];
+      apiResponse: P['apiResponse'];
+      sceneResponse: P['sceneResponse'];
+    },
     context: Context
   ) => Promise<R>;
 
 /**
  * 添加api场景，由开发者自定义
  */
+export type AddApiSceneRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'apiResponse'> & {
+  addScenePayload: AddScenePayload
+};
 export type AddApiSceneRequest<
-  P extends ProjectConfig = ProjectConfig,
-  A extends ApiResponse = ApiResponse,
+  P extends AddApiSceneRequestParams = AddApiSceneRequestParams,
   R extends AddSceneResponse = AddSceneResponse,
   > = (
-    project: P,
-    api: A,
-    scene: AddScenePayload,
+    params: {
+      projectConfig: P['projectConfig'];
+      projectResponse: P['projectResponse'];
+      apiResponse: P['apiResponse'];
+      addScenePayload: P['addScenePayload'];
+    },
     context: Context
   ) => Promise<R>;
 
 /**
  * 删除api场景，由开发者自定义
  */
+type DeleteApiSceneRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'apiResponse' | 'sceneResponse'>;
 export type DeleteApiSceneRequest<
-  P extends ProjectConfig = ProjectConfig,
-  A extends ApiResponse = ApiResponse,
-  S extends SceneResponse = SceneResponse,
+  P extends DeleteApiSceneRequestParams = DeleteApiSceneRequestParams,
   R = any
   > = (
-    project: P,
-    api: A,
-    scene: S,
+    params: {
+      projectConfig: P['projectConfig'];
+      projectResponse: P['projectResponse'];
+      apiResponse: P['apiResponse'];
+      sceneResponse: P['sceneResponse'];
+    },
     context: Context
   ) => Promise<R>;
 
 export interface UserScript {
   getProject: GetProjectRequest;
   getApi: GetApiRequest;
+  moveApi?: MoveApiRequest;
   updateApiScene?: UpdateApiSceneRequest;
   addApiScene?: AddApiSceneRequest;
   deleteApiScene?: DeleteApiSceneRequest;
