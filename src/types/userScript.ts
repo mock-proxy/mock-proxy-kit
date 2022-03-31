@@ -250,9 +250,7 @@ export type GetProjectRequest<
   P extends GetProjectRequestParams = GetProjectRequestParams,
   R extends ProjectResponse = ProjectResponse
   > = (
-    params: {
-      projectConfig: P['projectConfig']
-    },
+    params: P,
     context: Context
   ) => Promise<R>;
 
@@ -263,26 +261,19 @@ export type GetApiRequestParams = Pick<RequestParams, 'projectConfig' | 'project
 export type GetApiRequest<
   P extends GetApiRequestParams = GetApiRequestParams,
   R extends ApiResponse = ApiResponse
-  > = (params: {
-    projectConfig: P['projectConfig'];
-    projectResponse: P['projectResponse'];
-    overviewApiResponse: P['overviewApiResponse'];
-  }, context: Context) => Promise<R>;
+  > = (params: P, context: Context) => Promise<R>;
 
 /**
 * 移动api到其它分组的请求，由开发者自定义
 */
-export type MoveApiRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'groupResponse' | 'overviewApiResponse'>;
+export type MoveApiRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'overviewApiResponse'> & {
+  'groupPayload': GroupResponse
+};
 export type MoveApiRequest<
   P extends MoveApiRequestParams = MoveApiRequestParams,
   R = any
   > = (
-    params: {
-      projectConfig: P['projectConfig'];
-      projectResponse: P['projectResponse'];
-      groupPayload: P['groupResponse'];
-      overviewApiResponse: P['overviewApiResponse'];
-    },
+    params: P,
     context: Context
   ) => Promise<R>;
 
@@ -294,12 +285,7 @@ export type UpdateApiSceneRequest<
   P extends UpdateApiSceneRequestParams = UpdateApiSceneRequestParams,
   R = any
   > = (
-    params: {
-      projectConfig: P['projectConfig'];
-      projectResponse: P['projectResponse'];
-      apiResponse: P['apiResponse'];
-      sceneResponse: P['sceneResponse'];
-    },
+    params: P,
     context: Context
   ) => Promise<R>;
 
@@ -313,29 +299,19 @@ export type AddApiSceneRequest<
   P extends AddApiSceneRequestParams = AddApiSceneRequestParams,
   R extends AddSceneResponse = AddSceneResponse,
   > = (
-    params: {
-      projectConfig: P['projectConfig'];
-      projectResponse: P['projectResponse'];
-      apiResponse: P['apiResponse'];
-      addScenePayload: P['addScenePayload'];
-    },
+    params: P,
     context: Context
   ) => Promise<R>;
 
 /**
  * 删除api场景，由开发者自定义
  */
-type DeleteApiSceneRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'apiResponse' | 'sceneResponse'>;
+export type DeleteApiSceneRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'apiResponse' | 'sceneResponse'>;
 export type DeleteApiSceneRequest<
   P extends DeleteApiSceneRequestParams = DeleteApiSceneRequestParams,
   R = any
   > = (
-    params: {
-      projectConfig: P['projectConfig'];
-      projectResponse: P['projectResponse'];
-      apiResponse: P['apiResponse'];
-      sceneResponse: P['sceneResponse'];
-    },
+    params: P,
     context: Context
   ) => Promise<R>;
 
