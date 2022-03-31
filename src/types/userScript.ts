@@ -272,7 +272,7 @@ export type GetApiRequest<
 /**
 * 移动api到其它分组的请求，由开发者自定义
 */
-export type MoveApiRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'groupResponse' | 'apiResponse'>;
+export type MoveApiRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'groupResponse' | 'overviewApiResponse'>;
 export type MoveApiRequest<
   P extends MoveApiRequestParams = MoveApiRequestParams,
   R = any
@@ -281,7 +281,7 @@ export type MoveApiRequest<
       projectConfig: P['projectConfig'];
       projectResponse: P['projectResponse'];
       groupPayload: P['groupResponse'];
-      apiResponse: P['apiResponse'];
+      overviewApiResponse: P['overviewApiResponse'];
     },
     context: Context
   ) => Promise<R>;
