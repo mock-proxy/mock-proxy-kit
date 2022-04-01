@@ -315,6 +315,9 @@ export type DeleteApiSceneRequest<
     context: Context
   ) => Promise<R>;
 
+/**
+ * 自定义脚本接口
+ */
 export interface UserScript {
   getProject: GetProjectRequest;
   getApi: GetApiRequest;
