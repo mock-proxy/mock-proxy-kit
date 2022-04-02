@@ -9,46 +9,45 @@ npm i mock-proxy-kit -S
 
 ```typescript
 /**
- * api可否编辑
+ * 操作权限
  */
-export type ApiEditable = {
+export type OperationPermissions = {
   /**
-   * 是否可移动分组
-   * @default false
+   * 场景可否新增
+   * @default true
    */
-  movable?: boolean;
-} | boolean;
-
-/**
- * api场景可否编辑
- */
-export type ApiSceneEditable = {
+  sceneAdd?: boolean;
   /**
    * 场景可否更改
-   * @default false
+   * @default true
    */
-  updatable?: boolean;
+  sceneUpdate?: boolean;
+  /**
+   * 场景可否删除
+   * @default true
+   */
+  sceneDelete?: boolean;
   /**
   * 场景名称可否编辑，需要updatable为true才会生效
   * @default true
   */
-  nameEditable?: boolean;
+  sceneNameEdit?: boolean;
   /**
    * 默认场景可否编辑（更改或删除）
    * @default true
    */
-  defaultSceneEditable?: boolean;
+  defaultSceneEdit?: boolean;
   /**
-   * 场景可否删除
-   * @default false
+   * 是否可移动api分组
+   * @default true
    */
-  deletable?: boolean;
+  apiMove?: boolean;
   /**
-   * 场景可否新增
-   * @default false
+   * 是否可创建分组
+   * @default true
    */
-  addable?: boolean;
-} | boolean;
+  groupAdd?: boolean;
+}
 
 /**
  * 项目配置
@@ -133,15 +132,9 @@ export interface TeamConfig {
    */
   configPageUrl?: string;
   /**
-   * 可否编辑api（改变分组）
-   * @default false
+   * 操作权限，默认都开启，但面板会依据script的情况，进行展示
    */
-  apiEditable?: ApiEditable;
-  /**
-   * 可否编辑api场景（增加场景、修改mock数据）
-   * @default false
-   */
-  apiSceneEditable?: ApiSceneEditable;
+  operationPermissions?: OperationPermissions;
   /**
    * 默认场景id，一是用于进入详情面板后匹配，二是用于未来支持其它平台的默认场景编辑匹配（如rap2）
    * @default 'default'
@@ -475,6 +468,30 @@ export type DeleteApiSceneRequest<
   ) => Promise<R>;
 
 /**
+ * 增加分组，由开发者自定义
+ */
+export type AddGroupRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse'>;
+export type AddGroupRequest<
+  P extends AddGroupRequestParams = AddGroupRequestParams,
+  R = any
+  > = (
+    params: P,
+    context: Context
+  ) => Promise<R>;
+
+/**
+ * 删除分组，由开发者自定义
+ */
+ export type DeleteGroupRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'groupResponse'>;
+ export type DeleteGroupRequest<
+   P extends DeleteGroupRequestParams = DeleteGroupRequestParams,
+   R = any
+   > = (
+     params: P,
+     context: Context
+   ) => Promise<R>;
+
+/**
  * 自定义脚本接口
  */
 export interface UserScript {
@@ -484,6 +501,8 @@ export interface UserScript {
   updateApiScene?: UpdateApiSceneRequest;
   addApiScene?: AddApiSceneRequest;
   deleteApiScene?: DeleteApiSceneRequest;
+  addGroup?: AddGroupRequest;
+  deleteGroup?: DeleteGroupRequest;
 }
 ```
 

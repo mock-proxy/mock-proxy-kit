@@ -316,6 +316,30 @@ export type DeleteApiSceneRequest<
   ) => Promise<R>;
 
 /**
+ * 增加分组，由开发者自定义
+ */
+export type AddGroupRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse'>;
+export type AddGroupRequest<
+  P extends AddGroupRequestParams = AddGroupRequestParams,
+  R = any
+  > = (
+    params: P,
+    context: Context
+  ) => Promise<R>;
+
+/**
+ * 删除分组，由开发者自定义
+ */
+ export type DeleteGroupRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse' | 'groupResponse'>;
+ export type DeleteGroupRequest<
+   P extends DeleteGroupRequestParams = DeleteGroupRequestParams,
+   R = any
+   > = (
+     params: P,
+     context: Context
+   ) => Promise<R>;
+
+/**
  * 自定义脚本接口
  */
 export interface UserScript {
@@ -325,4 +349,6 @@ export interface UserScript {
   updateApiScene?: UpdateApiSceneRequest;
   addApiScene?: AddApiSceneRequest;
   deleteApiScene?: DeleteApiSceneRequest;
+  addGroup?: AddGroupRequest;
+  deleteGroup?: DeleteGroupRequest;
 }
