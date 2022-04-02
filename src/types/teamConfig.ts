@@ -8,7 +8,7 @@ export type OperationPermissions = {
    */
   sceneAdd?: boolean;
   /**
-   * 场景可否更改
+   * 场景可否更改（mock数据）
    * @default true
    */
   sceneUpdate?: boolean;
@@ -18,8 +18,8 @@ export type OperationPermissions = {
    */
   sceneDelete?: boolean;
   /**
-  * 场景名称可否编辑，需要updatable为true才会生效
-  * @default true
+  * 场景名称可否编辑，需要sceneUpdate为true才会生效
+  * @default false
   */
   sceneNameEdit?: boolean;
   /**
@@ -37,6 +37,11 @@ export type OperationPermissions = {
    * @default true
    */
   groupAdd?: boolean;
+  /**
+   * 是否可删除分组
+   * @default true
+   */
+  groupDelete?: boolean;
 }
 
 /**
@@ -87,10 +92,6 @@ export interface SiteConfig {
    * 站点对应的项目配置。可能一个站点对应了多个项目（即oneapi、yapi的project）
    */
   projects: ProjectConfig[];
-  /**
-   * 跨站点配置：可能该站点需要调用其他site的接口
-   */
-  // crossSiteConfig: unknown;
 }
 
 /**

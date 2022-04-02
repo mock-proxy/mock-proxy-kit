@@ -318,7 +318,11 @@ export type DeleteApiSceneRequest<
 /**
  * 增加分组，由开发者自定义
  */
-export type AddGroupRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse'>;
+export type AddGroupRequestParams = Pick<RequestParams, 'projectConfig' | 'projectResponse'> & {
+  addGroupPayload: {
+    name: string;
+  }
+};
 export type AddGroupRequest<
   P extends AddGroupRequestParams = AddGroupRequestParams,
   R = any
