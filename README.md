@@ -525,13 +525,26 @@ import {
   ApiResponse,
   SceneResponse,
   userScript,
-  AddSceneResponse
+  AddSceneResponse,
+  GetApiRequestParams,
+  AddApiSceneRequestParams,
+  UpdateApiSceneRequestParams,
+  MoveApiRequestParams,
+  DeleteApiSceneRequestParams,
+  AddGroupRequestParams,
+  DeleteGroupRequestParams
 } from 'mock-proxy-kit';
-import { OneApiQueryApi, OneApiQueryProject, OneapiApiOverview } from './types';
+
+import {
+  OneapiOriginalQueryApiResponse,
+  OneapiOriginalQueryProjectResponse,
+  OneapiOriginalApiOverview
+} from './types';
 
 interface RequestMap {
   /**
-   * key为api path；value为realPath
+   * key为api path
+   * value为realPath
    */
   [path: string]: string;
 }
@@ -552,12 +565,12 @@ interface OneapiAddSceneResponse extends AddSceneResponse {
 interface OneapiSceneResponse extends SceneResponse {
 }
 
-const oneapiBaseUrl = 'https://xxx.com';
+const oneapiBaseUrl = 'https://oneapi.alibaba-inc.com';
 
 const DEFAULT_SCENE_NAME = 'default';
 
 // 如果描述有mtop，则认为该接口是mtop接口，将描述作为真实路径
-function getRealPath(project: OneapiProjectConfig, api: OneapiApiOverview): string {
+function getRealPath(project: OneapiProjectConfig, api: OneapiOriginalApiOverview): string {
   if ((api.description || '').includes('mtop')) return api.description as string;
 
   return project.requestMap?.[api.apiName] || api.apiName;
@@ -567,7 +580,7 @@ function isMtopPath(realPath: string) {
   return realPath.startsWith('/mtop') || realPath.startsWith('mtop');
 }
 
-function getMockUrl(project: OneapiProjectConfig, api: OneapiApiOverview, realPath: string, groupName?: string): string {
+function getMockUrl(project: OneapiProjectConfig, api: OneapiOriginalApiOverview, realPath: string, groupName?: string): string {
   if (isMtopPath(realPath)) {
     return `${oneapiBaseUrl}/mock/${project.id}/${api.apiName}${groupName ? `?_tag=${groupName}&wrapper=mtop` : '?wrapper=mtop'}`;
   }
@@ -575,7 +588,7 @@ function getMockUrl(project: OneapiProjectConfig, api: OneapiApiOverview, realPa
   return `${oneapiBaseUrl}/mock/${project.id}/${api.apiName}${groupName ? `?_tag=${groupName}` : ''}`;
 }
 
-function getSourceUrl(project: OneapiProjectConfig, api: OneapiApiOverview): string {
+function getSourceUrl(project: OneapiProjectConfig, api: OneapiOriginalApiOverview): string {
   return `${oneapiBaseUrl}/eapi/interface-manager?projectCode=${project.id}&apiName=${encodeURIComponent(api.apiName)}&method=${api.method}`;
 }
 
@@ -587,15 +600,22 @@ function getApiRegExp(realPath: string) {
   return '';
 }
 
-export const getProject: userScript.GetProjectRequest<OneapiProjectConfig> = (project, context) => {
-  return context.fetchJSON<OneApiQueryProject>(`${oneapiBaseUrl}/api/oneapi/group/query?projectCode=${project.id}`).then((res) => {
+/**
+ * 获取项目及分组（下面的api）的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
+export const getProject: userScript.GetProjectRequest<{ projectConfig: OneapiProjectConfig }> = (params, context) => {
+  const { projectConfig } = params;
+  return context.fetchJSON<OneapiOriginalQueryProjectResponse>(`${oneapiBaseUrl}/api/oneapi/group/query?projectCode=${projectConfig.id}`).then((res) => {
     if (!res.success) throw new Error('获取项目失败');
 
     const defaultGroup: GroupResponse = {
       id: 'default',
       name: '默认分组',
       apis: (res.content.apis || []).map(api => {
-        const realPath = getRealPath(project, api);
+        const realPath = getRealPath(projectConfig, api);
         const ret: OverviewApiResponse = {
           id: api.id,
           name: api.description || '',
@@ -603,11 +623,9 @@ export const getProject: userScript.GetProjectRequest<OneapiProjectConfig> = (pr
           path: api.apiName,
           realPath,
           creator: api.creator?.nickName,
-          mockUrl: getMockUrl(project, api, realPath),
-          sourceUrl: getSourceUrl(project, api),
+          mockUrl: getMockUrl(projectConfig, api, realPath),
+          sourceUrl: getSourceUrl(projectConfig, api),
           regexFilter: getApiRegExp(realPath),
-          // 补充restful、多前缀等逻辑
-          // regexFilter
         };
         return ret;
       }),
@@ -618,7 +636,7 @@ export const getProject: userScript.GetProjectRequest<OneapiProjectConfig> = (pr
         id: group.id,
         name: group.name,
         apis: (group.apis || []).map(api => {
-          const realPath = getRealPath(project, api);
+          const realPath = getRealPath(projectConfig, api);
           const ret: OverviewApiResponse = {
             id: api.id,
             name: api.description || '',
@@ -626,10 +644,8 @@ export const getProject: userScript.GetProjectRequest<OneapiProjectConfig> = (pr
             path: api.apiName,
             realPath,
             creator: api.creator?.nickName,
-            mockUrl: getMockUrl(project, api, realPath),
-            sourceUrl: getSourceUrl(project, api),
-            // 补充多前缀等逻辑
-            // regexFilter
+            mockUrl: getMockUrl(projectConfig, api, realPath),
+            sourceUrl: getSourceUrl(projectConfig, api),
           };
           return ret;
         }),
@@ -645,12 +661,22 @@ export const getProject: userScript.GetProjectRequest<OneapiProjectConfig> = (pr
   });
 }
 
-export const getApi: userScript.GetApiRequest<OneapiProjectConfig, OneapiOverviewApiResponse, OneapiApiResponse> = (project, api, context) => {
-  return context.fetchJSON<OneApiQueryApi>(`${oneapiBaseUrl}/api/info/getApi?projectCode=${project.id}&apiName=${encodeURIComponent(api.path)}`).then((res) => {
+/**
+ * 获取api详情的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
+export const getApi: userScript.GetApiRequest<GetApiRequestParams & {
+  projectConfig: OneapiProjectConfig,
+  overviewApiResponse: OneapiOverviewApiResponse
+}, OneapiApiResponse> = (params, context) => {
+  const { projectConfig, overviewApiResponse, } = params;
+  return context.fetchJSON<OneapiOriginalQueryApiResponse>(`${oneapiBaseUrl}/api/info/getApi?projectCode=${projectConfig.id}&apiName=${encodeURIComponent(overviewApiResponse.path)}`).then((res) => {
     if (!res.success) throw new Error('获取接口失败');
     const scenes: SceneResponse[] = [];
 
-    const realPath = getRealPath(project, res.content);
+    const realPath = getRealPath(projectConfig, res.content);
 
     Object.entries(res.content.tagResponses).forEach(([groupName, mockData]) => {
       scenes.push({
@@ -658,7 +684,7 @@ export const getApi: userScript.GetApiRequest<OneapiProjectConfig, OneapiOvervie
         id: groupName,
         name: groupName,
         mockUrl: getMockUrl(
-          project,
+          projectConfig,
           res.content,
           realPath,
           groupName === DEFAULT_SCENE_NAME ? '' : groupName
@@ -676,8 +702,8 @@ export const getApi: userScript.GetApiRequest<OneapiProjectConfig, OneapiOvervie
       realPath,
       regexFilter: getApiRegExp(realPath),
       creator: res.content.creator?.nickName,
-      mockUrl: getMockUrl(project, res.content, realPath),
-      sourceUrl: getSourceUrl(project, res.content),
+      mockUrl: getMockUrl(projectConfig, res.content, realPath),
+      sourceUrl: getSourceUrl(projectConfig, res.content),
       mockData: res.content.tagResponses?.default,
       scenes
     };
@@ -685,21 +711,80 @@ export const getApi: userScript.GetApiRequest<OneapiProjectConfig, OneapiOvervie
   });
 }
 
+/**
+ * 移动api的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
+export const moveApi: userScript.MoveApiRequest<
+  MoveApiRequestParams & {
+    projectConfig: OneapiProjectConfig,
+    overviewApiResponse: OneapiOverviewApiResponse,
+  },
+  {
+    success: boolean
+  }
+> = (params, context) => {
+  const {
+    projectConfig,
+    overviewApiResponse,
+    groupPayload,
+  } = params;
+
+  const payload: any = {
+    id: overviewApiResponse.id,
+    apiId: overviewApiResponse.id,
+    apiName: overviewApiResponse.path,
+    projectCode: projectConfig.id,
+    csrf: '',
+  };
+
+  if (groupPayload.id !== 'default') {
+    payload.pid = groupPayload.id;
+  }
+
+  return context.fetchJSON<{
+    success: boolean
+  }>(`${oneapiBaseUrl}/api/info/update`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then((res) => {
+    if (!res.success) throw new Error('更新失败');
+    return res;
+  });
+}
+
+/**
+ * 添加场景的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
 export const addApiScene: userScript.AddApiSceneRequest<
-  OneapiProjectConfig,
-  OneapiApiResponse,
+  AddApiSceneRequestParams & {
+    projectConfig: OneapiProjectConfig,
+    apiResponse: OneapiApiResponse,
+  },
   OneapiAddSceneResponse
 > = (
-  project,
-  api,
-  scene,
+  params,
   context
 ) => {
+    const {
+      projectConfig,
+      apiResponse,
+      addScenePayload,
+    } = params;
+
     const payload = {
-      apiName: api.path,
-      projectCode: project.id,
-      tagName: scene.name,
-      tagResponse: scene.mockData,
+      apiName: apiResponse.path,
+      projectCode: projectConfig.id,
+      tagName: addScenePayload.name,
+      tagResponse: addScenePayload.mockData,
       csrf: '',
     };
 
@@ -720,19 +805,33 @@ export const addApiScene: userScript.AddApiSceneRequest<
     });
   }
 
+/**
+ * 更新场景的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
 export const updateApiScene: userScript.UpdateApiSceneRequest<
-  OneapiProjectConfig,
-  OneapiApiResponse,
-  OneapiSceneResponse,
+  UpdateApiSceneRequestParams & {
+    projectConfig: OneapiProjectConfig,
+    apiResponse: OneapiApiResponse,
+    sceneResponse: OneapiSceneResponse,
+  },
   {
     success: boolean
   }
-> = (project, api, scene, context) => {
+> = (params, context) => {
+  const {
+    projectConfig,
+    apiResponse,
+    sceneResponse,
+  } = params;
+
   const payload = {
-    apiName: api.path,
-    projectCode: project.id,
-    tagName: scene.name,
-    tagResponse: scene.mockData,
+    apiName: apiResponse.path,
+    projectCode: projectConfig.id,
+    tagName: sceneResponse.name,
+    tagResponse: sceneResponse.mockData,
     csrf: '',
   };
 
@@ -750,23 +849,35 @@ export const updateApiScene: userScript.UpdateApiSceneRequest<
   });
 }
 
+/**
+ * 删除场景的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
 export const deleteApiScene: userScript.DeleteApiSceneRequest<
-  OneapiProjectConfig,
-  OneapiApiResponse,
-  OneapiSceneResponse,
+  DeleteApiSceneRequestParams & {
+    projectConfig: OneapiProjectConfig,
+    apiResponse: OneapiApiResponse,
+    sceneResponse: OneapiSceneResponse,
+  },
   {
     success: boolean
   }
 > = (
-  project,
-  api,
-  scene,
+  params,
   context,
-) => {
+  ) => {
+    const {
+      projectConfig,
+      apiResponse,
+      sceneResponse,
+    } = params;
+
     const payload = {
-      apiName: api.path,
-      projectCode: project.id,
-      tagName: scene.name,
+      apiName: apiResponse.path,
+      projectCode: projectConfig.id,
+      tagName: sceneResponse.name,
       csrf: '',
     };
 
@@ -779,6 +890,69 @@ export const deleteApiScene: userScript.DeleteApiSceneRequest<
         'Content-Type': 'application/json'
       }
     }).then((res) => {
+      if (!res.success) throw new Error('删除失败');
+      return res;
+    });
+  }
+
+/**
+ * 添加分组的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
+export const addGroup: userScript.AddGroupRequest<
+  AddGroupRequestParams & {
+    projectConfig: OneapiProjectConfig,
+  },
+  {
+    success: boolean
+  }
+> = (
+  params,
+  context,
+  ) => {
+    const {
+      projectConfig,
+      addGroupPayload
+    } = params;
+
+    return context.fetchJSON<{
+      success: boolean
+    }>(`${oneapiBaseUrl}/api/oneapi/group/create?name=${addGroupPayload.name}&projectCode=${projectConfig.id}`).then((res) => {
+      if (!res.success) throw new Error('创建失败');
+      return res;
+    });
+  }
+
+/**
+ * 删除分组的请求映射
+ * @param params
+ * @param context
+ * @returns
+ */
+export const deleteGroup: userScript.DeleteGroupRequest<
+  DeleteGroupRequestParams & {
+    projectConfig: OneapiProjectConfig,
+  },
+  {
+    success: boolean
+  }
+> = (
+  params,
+  context,
+  ) => {
+    const {
+      groupResponse
+    } = params;
+
+    if (groupResponse.id === 'default') {
+      return Promise.reject(new Error('默认分组无法删除'));
+    }
+
+    return context.fetchJSON<{
+      success: boolean
+    }>(`${oneapiBaseUrl}/api/oneapi/group/delete?id=${groupResponse.id}`).then((res) => {
       if (!res.success) throw new Error('删除失败');
       return res;
     });
