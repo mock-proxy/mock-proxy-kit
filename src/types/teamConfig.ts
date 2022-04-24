@@ -1,3 +1,5 @@
+import { SmartMockRule } from "./smartMock";
+
 /**
  * 操作权限
  */
@@ -131,4 +133,8 @@ export interface TeamConfig {
    * @default 'default'
    */
   defaultSceneId?: string;
+  /**
+   * 智能mock规则
+   */
+  smartMockRules?: SmartMockRule[];
 }

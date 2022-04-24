@@ -8,3 +8,4 @@ export { UserScript } from './userScript';
 export * from './common';
 export * from './teamConfig';
 export * from './userScript';
+export * from './smartMock';
