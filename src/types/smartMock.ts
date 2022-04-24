@@ -1,20 +1,46 @@
 export interface SmartMockRule {
+  /**
+   * 规则名称
+   */
   name: string;
+  /**
+   * 规则条件
+   */
   condition: {
+    /**
+     * key匹配类型
+     */
     keyPatternType: 'exact' | 'regexp';
+    /**
+     * key匹配pattern，若是exact，则为字符串；若为regexp，则支持RE2 syntax，可以理解为 new RegExp(keyPattern)
+     */
     keyPattern: string;
+    /**
+     * 上述key匹配是否忽略大小写
+     * @default false
+     */
     keyIgnoreCase?: boolean;
+    /**
+     * 值的类型
+     * @default 'any'
+     */
     valueType?: 'string' | 'number' | 'boolean' | 'array' | 'object' | 'any';
     /**
-     * TODO: 可支持 > 2等
+     * 当前record层级
+     * @default 'any'
+     * TODO: 未来可支持 > 2等
      */
-    depth?: number | 'all';
+    depth?: number | 'any';
   }
   action: {
     /**
-     * $1等代表正则匹配
+     * 对key的修改
+     * 支持substitution，即：$1、$2等，代表正则的括号匹配
      */
     modifyKey?: string;
+    /**
+     * 对值的修改
+     */
     modifyValue?: any;
   }
 }
