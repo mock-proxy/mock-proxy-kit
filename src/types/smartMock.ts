@@ -9,8 +9,9 @@ export interface SmartMockRule {
   condition: {
     /**
      * key匹配类型
+     * @default 'exact'
      */
-    keyPatternType: 'exact' | 'regexp';
+    keyPatternType?: 'exact' | 'regexp';
     /**
      * key匹配pattern，若是exact，则为字符串；若为regexp，则支持RE2 syntax，可以理解为 new RegExp(keyPattern)
      */
