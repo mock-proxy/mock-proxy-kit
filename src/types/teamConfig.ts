@@ -65,6 +65,10 @@ export interface ProjectConfig {
    */
   crossOrigin?: boolean;
   /**
+   * 项目纬度的智能mock规则
+   */
+  smartMockRules?: SmartMockRule[];
+  /**
    * 其他开发者所需字段
    */
   [key: string]: any;
