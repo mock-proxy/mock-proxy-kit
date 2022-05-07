@@ -69,7 +69,7 @@ export interface ProjectConfig {
    */
   smartMockRules?: SmartMockRule[];
   /**
-   * 其他开发者所需字段
+   * 其他开发者所需字段，可在自定义脚本中取得
    */
   [key: string]: any;
 }
@@ -104,7 +104,6 @@ export interface SiteConfig {
  * 团队配置
  */
 export interface TeamConfig {
-  // TODO: 未来支持url配置
   sites: SiteConfig[];
   /**
    * 用户自定义crud mock平台脚本地址，脚本export参考UserScript类型
@@ -116,7 +115,7 @@ export interface TeamConfig {
   corsConfig: {
     /**
      * 主要是用于篡改access-control-allow-headers，避免引发cors问题
-     * 默认会支持
+     * 默认会支持 'content-type | authorization | x-requested-with | x-referer' | 'x-xsrf-token'
      */
     accessControlAllowHeaders?: string[];
     /**

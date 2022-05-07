@@ -1,3 +1,18 @@
+/**
+ * 正则括号匹配替代符
+ */
+export type SubstitutionKey = '$1' | '$2' | '$3' | '$4' | '$5' | '$6' | '$7' | '$8' | '$9';
+
+/**
+ * 正则括号匹配对象
+ */
+export type SubstitutionType = {
+  [key in SubstitutionKey]: string;
+};
+
+/**
+ * 智能mock规则
+ */
 export interface SmartMockRule {
   /**
    * 规则名称
@@ -29,7 +44,6 @@ export interface SmartMockRule {
     /**
      * 当前record层级
      * @default 'any'
-     * TODO: 未来可支持 > 2等
      */
     depth?: number | 'any';
   }
@@ -45,9 +59,3 @@ export interface SmartMockRule {
     modifyValue?: any;
   }
 }
-
-export type SubstitutionKey = '$1' | '$2' | '$3' | '$4' | '$5' | '$6' | '$7' | '$8' | '$9';
-
-export type SubstitutionType = {
-  [key in SubstitutionKey]: string;
-};
