@@ -220,13 +220,17 @@ interface RequestParams {
 
 /**
  * 开发者自定义函数上下文。
- * 可通过fetchJson，拉取或向服务端传递json数据，不受同源限制，拥有高权限
+ * 可通过fetchJson，拉取或向服务端传递json数据，不受同源限制，拥有高权限。
+ * 本质是通过iframe通信，所以传递的数据会有一些限制，比如不能传递formData，不能传递blob等。
  */
 export interface Context {
   /**
    * 跟fetch一致，会自动res.json()
    */
-  fetchJSON: <Response = any>(...args: Parameters<typeof fetch>) => Promise<Response>;
+  fetchJSON: <Response = any>(input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1], options?: {
+    /** 是否将body转为formData，因为通过iframe通信，无法默认传出FormData，需在此指定让插件去解析 */
+    transformBodyToFormData?: boolean;
+  }) => Promise<Response>;
   /**
    * 当前页面信息
    */
