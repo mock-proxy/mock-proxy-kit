@@ -15,6 +15,11 @@ import { SmartMockRule } from "./smartMock";
  */
 export type OperationPermissions = {
   /**
+   * 场景可否开关
+   * @default true
+   */
+  sceneOpen?: boolean;
+  /**
    * 场景可否新增
    * @default true
    */
