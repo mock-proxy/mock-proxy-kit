@@ -156,7 +156,7 @@ export interface ApiResponse {
    */
   mockUrl: string;
   /**
-   * mock数据
+   * mock数据，若场景mock数据为空，会以该数据作为新增场景时的默认mock数据
    */
   mockData: any;
   /**
