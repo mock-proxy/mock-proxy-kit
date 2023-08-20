@@ -1,6 +1,6 @@
 {
   "name": "mock-proxy-kit",
-  "version": "2.2.6",
+  "version": "2.3.0",
   "description": "mock proxy插件kit，目前包含插件相关全部类型",
   "main": "./dist/index.js",
   "types": "./dist/tsc/index.d.ts",

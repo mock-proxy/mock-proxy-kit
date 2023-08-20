@@ -1,7 +1,7 @@
 import {
   ApiMethod
 } from "./common";
-import { ProjectConfig } from "./teamConfig";
+import { ProjectConfig, TeamConfig } from "./teamConfig";
 
 /**
  * 面板中api场景的返回值
@@ -244,6 +244,10 @@ export interface Context {
      */
     userAgent: string;
   }
+  /**
+   * 团队配置
+   */
+  teamConfig: TeamConfig;
 }
 
 /**
