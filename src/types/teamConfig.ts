@@ -103,6 +103,10 @@ export interface SiteConfig {
    * 站点对应的项目配置。可能一个站点对应了多个项目（即oneapi、yapi的project）
    */
   projects: ProjectConfig[];
+  /**
+   * 其他开发者所需字段，可在自定义脚本中取得
+   */
+  [key: string]: any;
 }
 
 /**
@@ -145,4 +149,8 @@ export interface TeamConfig {
    * 智能mock规则
    */
   smartMockRules?: SmartMockRule[];
+  /**
+   * 其他开发者所需字段，可在自定义脚本中取得
+   */
+  [key: string]: any;
 }
