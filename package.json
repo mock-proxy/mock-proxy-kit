@@ -1,5 +1,5 @@
 {
-  "name": "mock-proxy-kit",
+  "name": "@mock-proxy/mock-proxy-kit",
   "version": "2.3.1",
   "description": "mock proxy插件kit，目前包含插件相关全部类型",
   "main": "./dist/index.js",
@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run clean && tsc && esbuild src/index.ts --bundle --minify --sourcemap=external --target=es2018 --outfile=dist/index.js",
     "clean": "rm -rf dist",
-    "release": "pnpm publish --no-git-checks"
+    "release": "pnpm publish --no-git-checks --access public"
   },
   "repository": {
     "type": "git",
